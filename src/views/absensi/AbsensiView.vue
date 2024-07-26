@@ -1,24 +1,35 @@
 <script setup>
-import { RouterLink } from "vue-router";
-import { exportAsExcel, getAbsensi } from "@/services/api";
-import { onMounted, ref } from "vue";
+import { exportAsExcel, getAbsensi } from "@/services/api-absensi";
+import { computed, onMounted, ref } from "vue";
 import absensi from "@/stores/absensi";
-import { formatDateString } from "@/utils/formatDateString";
+import { useAuthStore } from "@/stores/auth";
 
 const store = absensi();
+const auth = useAuthStore();
 
+const update = ref(true);
 const error = ref(null);
 const loading = ref(true);
+
+const filterName = ref("");
+const filterDate = ref("");
+
+const filteredAbsensi = computed(() => {
+  return store.absensi.filter((item) => {
+    const matchesName = filterName.value
+      ? item.nama.toLowerCase().includes(filterName.value.toLowerCase())
+      : true;
+    const matchesDate = filterDate.value
+      ? item.tanggal_absensi === filterDate.value
+      : true;
+    return matchesName && matchesDate;
+  });
+});
 
 const fetchAbsensi = async () => {
   try {
     const data = await getAbsensi();
     console.log("Fetched Mahasiswa List:", data);
-
-    // const formattedData = data.map((item) => ({
-    //   ...item,
-    //   tanggal_absensi: formatDateString(item.tanggal_absensi),
-    // }));
 
     store.absensi = data;
   } catch (err) {
@@ -48,30 +59,41 @@ onMounted(() => fetchAbsensi());
 </script>
 
 <template>
-  <div>
-    <div role="alert" class="alert alert-error shadow-lg" v-if="error">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="stroke-current flex-shrink-0 h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M18.364 5.636l-12.728 12.728m12.728 0L5.636 5.636m12.728 0L5.636 18.364m0-12.728L18.364 18.364"
-        ></path>
-      </svg>
-      <!-- <span>{{ error }}</span> -->
-    </div>
-
+  <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-3">Absensi</h1>
 
-    <div class="mx-auto">
+    <div v-if="auth.token" class="mx-auto">
       <button @click="exportData" class="btn btn-primary mb-3">
         Export data
       </button>
+    </div>
+
+    <div class="mx-auto my-5">
+      <h3 class="text-xl font-bold">Filter Data</h3>
+
+      <div class="flex space-x-5">
+        <div class="form-control w-full">
+          <div class="label">
+            <span class="label-text"> Anggota </span>
+          </div>
+          <input
+            type="text"
+            placeholder="Nama Anggota"
+            class="input input-bordered rounded-md w-full"
+            v-model="filterName"
+          />
+        </div>
+        <div class="form-control w-full">
+          <div class="label">
+            <span class="label-text"> Tanggal Absensi </span>
+          </div>
+          <input
+            type="date"
+            class="input input-bordered rounded-md w-full"
+            v-model="filterDate"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="overflow-x-auto">
@@ -84,24 +106,30 @@ onMounted(() => fetchAbsensi());
             <th>Tanggal Absensi</th>
             <th>Waktu Absensi</th>
             <th>Status</th>
-            <th></th>
+            <!-- <th></th> -->
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(absensi, index) in store.absensi" :key="index">
+          <tr v-for="(absensi, index) in filteredAbsensi" :key="index">
             <th>{{ index + 1 }}</th>
             <td>{{ absensi.nama }}</td>
             <td>{{ absensi.id_mahasiswa }}</td>
             <td>{{ absensi.tanggal_absensi }}</td>
             <td>{{ absensi.jam_absensi }}</td>
-            <td>{{ absensi.keterangan }}</td>
             <td>
-              <div class="btn btn-primary">
-                <RouterLink :to="`/absensi/${absensi.id_absensi}`">
-                  Details
-                </RouterLink>
-              </div>
+              <select :disabled="update" class="select select-bordered w-full">
+                <option value="hadir">Hadir</option>
+                <option value="tidak hadir">Tidak Hadir</option>
+              </select>
             </td>
+            <!-- <td>
+              <div class="flex space-x-4">
+                <button class="btn btn-warning" @click="update = !update">
+                  Update
+                </button>
+                <button v-show="!update" class="btn btn-success">Update</button>
+              </div>
+            </td> -->
           </tr>
         </tbody>
       </table>

@@ -1,7 +1,7 @@
 <script setup>
 import camera from "@/stores/camera";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { addAbsensi, recognizeFace } from "@/services/api";
+import { addAbsensi, recognizeFace } from "@/services/api-absensi";
 
 const store = camera();
 const video = ref(null);
@@ -9,6 +9,7 @@ const canvas = ref(null);
 const showCanvas = ref(true);
 const toastMessage = ref(null);
 const toastType = ref(null);
+// let timeInterval = null;
 
 const showToast = (message, type) => {
   toastMessage.value = message;
@@ -50,6 +51,8 @@ const submitAbsensi = async () => {
     keterangan: store.formData.status,
   };
 
+  // console.log(data);
+
   try {
     const response = await addAbsensi(data);
 
@@ -82,6 +85,12 @@ const snap = () => {
   }
 };
 
+// const updateDateTime = () => {
+//   const now = new Date();
+//   store.setFormData("dateInput", now.toISOString().split("T")[0]);
+//   store.setFormData("timeInput", now.toTimeString().split(" ")[0].slice(0, 5));
+// };
+
 onMounted(async () => {
   const mediaStream = await store.initCamera();
   if (video.value) {
@@ -96,6 +105,8 @@ onMounted(async () => {
   if (!store.formData.timeInput) {
     store.formData.timeInput = now.toTimeString().split(" ")[0].slice(0, 5);
   }
+  // updateDateTime();
+  // timeInterval = setInterval(updateDateTime, 60000);
 });
 
 onBeforeUnmount(() => {
@@ -105,6 +116,9 @@ onBeforeUnmount(() => {
   store.formData.divisi = "";
   canvas.value = null;
   video.value = null;
+  // if (timeInterval) {
+  //   clearInterval(timeInterval);
+  // }
 });
 
 watch(
@@ -118,7 +132,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex flex-col md:flex-row">
+  <div class="flex flex-col md:flex-row p-5">
     <div class="w-full md:w-1/2 p-2">
       <div class="aspect-w-16 aspect-h-9">
         <div class="flex items-center justify-center">

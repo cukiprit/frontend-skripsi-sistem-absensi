@@ -1,20 +1,15 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
-import NavbarComponent from "@/components/NavbarComponent.vue";
+import Navbar from "./components/Navbar.vue";
+import { useAuthStore } from "./stores/auth";
+import { onMounted } from "vue";
+
+const auth = useAuthStore();
+
+onMounted(() => {
+  auth.loadToken();
+});
 </script>
 
 <template>
-  <header>
-    <!-- <div>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div> -->
-    <NavbarComponent />
-  </header>
-
-  <div class="container mx-auto p-4">
-    <RouterView />
-  </div>
+  <Navbar />
 </template>

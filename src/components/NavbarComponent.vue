@@ -1,16 +1,16 @@
 <script setup>
-import { RouterLink } from "vue-router";
-import theme from "@/stores/theme";
-import { computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { computed, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
-const store = theme();
+const auth = useAuthStore();
+const router = useRouter();
 
-const currentTheme = computed(() =>
-  store.theme === "dracula" ? "corporate" : "dracula"
-);
+const authenticate = computed(() => !!auth.token);
 
-const toggleTheme = () => {
-  store.toggleTheme();
+const handleLogout = () => {
+  auth.logout();
+  router.push("/login");
 };
 </script>
 
@@ -26,16 +26,25 @@ const toggleTheme = () => {
         <li>
           <RouterLink to="/">Home</RouterLink>
         </li>
-        <li>
+        <li v-if="authenticate">
           <RouterLink to="/mahasiswa">Mahasiswa</RouterLink>
         </li>
         <li>
           <RouterLink to="/absensi">Absensi</RouterLink>
         </li>
+        <li>
+          <RouterLink to="/absensi/leaderboard">Leaderboard</RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/notulensi">Notulensi</RouterLink>
+        </li>
+        <li v-if="authenticate">
+          <button @click="handleLogout">Logout</button>
+        </li>
+        <li v-else>
+          <RouterLink to="/login">Login</RouterLink>
+        </li>
       </ul>
-      <button @click="toggleTheme" type="button" class="btn btn-secondary">
-        {{ currentTheme }}
-      </button>
     </div>
   </nav>
 </template>

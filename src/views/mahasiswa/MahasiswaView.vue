@@ -26,7 +26,7 @@ onMounted(() => fetchMahasiswa());
 </script>
 
 <template>
-  <div>
+  <div class="container mx-auto p-4">
     <div role="alert" class="alert alert-error shadow-lg" v-if="error">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,7 @@ onMounted(() => fetchMahasiswa());
       <!-- <span>{{ error }}</span> -->
     </div>
 
-    <h1 class="text-3xl font-bold mb-3">Absensi</h1>
+    <h1 class="text-3xl font-bold mb-3">List Anggota</h1>
 
     <div class="mx-auto">
       <RouterLink class="btn btn-primary mb-3" to="/mahasiswa/add"

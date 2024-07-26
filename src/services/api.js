@@ -1,29 +1,15 @@
-const API_URL = "http://127.0.0.1:8000/api";
-
-export const recognizeFace = async (imageData) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", imageData);
-
-    const response = await fetch(`${API_URL}/predict`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`An error occured: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    throw new Error(`Error: ${err.message}`);
-  }
-};
+const API_URL = "http://127.0.0.1:8000/api/mahasiswa";
+const token = localStorage.getItem("token");
 
 export const getMahasiswa = async () => {
   try {
-    const response = await fetch(`${API_URL}/mahasiswa`);
+    const response = await fetch(`${API_URL}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`An error occured: ${response.statusText}`);
@@ -39,7 +25,13 @@ export const getMahasiswa = async () => {
 
 export const getMahasiswaByID = async (nim) => {
   try {
-    const response = await fetch(`${API_URL}/mahasiswa/${nim}`);
+    const response = await fetch(`${API_URL}/${nim}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
+      },
+    });
     console.log("Response:", response);
     if (!response.ok) {
       throw new Error(`An error occured: ${response.statusText}`);
@@ -55,11 +47,12 @@ export const getMahasiswaByID = async (nim) => {
 
 export const addMahasiswa = async (newMahasiswa) => {
   try {
-    const response = await fetch(`${API_URL}/mahasiswa`, {
+    const response = await fetch(`${API_URL}`, {
       method: "POST",
       body: JSON.stringify(newMahasiswa),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
       },
     });
 
@@ -77,8 +70,12 @@ export const addMahasiswa = async (newMahasiswa) => {
 
 export const deleteMahasiswa = async (nim) => {
   try {
-    const response = await fetch(`${API_URL}/mahasiswa/${nim}`, {
+    const response = await fetch(`${API_URL}/${nim}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
+      },
     });
 
     if (!response.ok) {
@@ -95,11 +92,12 @@ export const deleteMahasiswa = async (nim) => {
 
 export const updateMahasiswa = async (nim, newMahasiswa) => {
   try {
-    const response = await fetch(`${API_URL}/mahasiswa/${nim}`, {
+    const response = await fetch(`${API_URL}/${nim}`, {
       method: "PUT",
       body: JSON.stringify(newMahasiswa),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
       },
     });
 
@@ -112,59 +110,6 @@ export const updateMahasiswa = async (nim, newMahasiswa) => {
     console.log(data);
 
     return data;
-  } catch (err) {
-    throw new Error(`Error: ${err.message}`);
-  }
-};
-
-export const getAbsensi = async () => {
-  try {
-    const response = await fetch(`${API_URL}/absensi`);
-
-    if (!response.ok) {
-      throw new Error(`An error occured: ${response.statusText}`);
-    }
-
-    const absensi = await response.json();
-
-    return absensi;
-  } catch (err) {
-    throw new Error(`Error: ${err.message}`);
-  }
-};
-
-export const addAbsensi = async (absensi) => {
-  try {
-    const response = await fetch(`${API_URL}/absensi`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(absensi),
-    });
-
-    if (!response.ok) {
-      throw new Error(`An error occured: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    throw new Error(`Error: ${err.message}`);
-  }
-};
-
-export const exportAsExcel = async () => {
-  try {
-    const response = await fetch(`${API_URL}/absensi/export`, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to export absensi as Excel");
-    }
-
-    return response;
   } catch (err) {
     throw new Error(`Error: ${err.message}`);
   }

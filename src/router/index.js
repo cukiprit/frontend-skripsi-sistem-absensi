@@ -19,6 +19,12 @@ const router = createRouter({
       component: () => import("../views/mahasiswa/MahasiswaView.vue"),
     },
     {
+      path: "/login",
+      name: "login",
+
+      component: () => import("../views/LoginView.vue"),
+    },
+    {
       path: "/mahasiswa/add",
       name: "add-mahasiswa",
       component: () => import("../views/mahasiswa/AddMahasiswaView.vue"),
@@ -40,12 +46,25 @@ const router = createRouter({
       component: () => import("../views/absensi/AbsensiView.vue"),
     },
     {
+      path: "/absensi/leaderboard",
+      name: "leaderboard",
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import("../views/absensi/LeaderboardView.vue"),
+    },
+    {
       path: "/absensi/:id",
       name: "absensi-detail",
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import("../views/absensi/DetailAbsensiView.vue"),
+    },
+    {
+      path: "/notulensi",
+      name: "notulensi",
+      component: () => import("../views/notulensi/NotulensiView.vue"),
     },
   ],
 });
